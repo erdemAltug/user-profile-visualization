@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-footer>
-      <h1 style="font-weight: bold; margin-left: 45%"> Altug Erdem</h1>
+      <h1 class="author"> Altug Erdem</h1>
       <v-col style="position: absolute; right: 0;">
         <v-btn @click="darkMode">
           <v-icon class="mr-2">
@@ -56,7 +56,7 @@
           >
             <v-card
               class="cards"
-              v-for="item in filteredUsers.slice(0,10)"
+              v-for="item in filteredUsers.slice(0,sliceNumber)"
               :key="item.id"
             >
               <v-img
@@ -76,51 +76,25 @@
         </v-template>
       </v-row>
 
-      <v-row>
-        <v-template v-if="moreData">
-          <v-col
-            class="container"
-            cols="12"
-          >
-            <v-card
-              class="cards"
-              v-for="item in filteredUsersAll"
-              :key="item.id"
-            >
-              <v-img
-                height="70%"
-                width="100%"
-                :src="`${item.picture}`"
-              >
-              </v-img>
-              <v-card-text>
-                <div style="text-transform:capitalize;"> {{item.title}}.{{item.firstName}} {{item.lastName}} </div>
-                <div>
-                  {{item.email}}
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-template>
-      </v-row>
+ 
       <v-row>
         <v-col style="display:flex; justify-content: center;">
-          <v-template v-if="moreData == false">
+          <!-- <v-template v-if="moreData == false"> -->
             <v-btn
-              class="c"
+              class="fetchButton"
               @click="fetchMoreData"
               small
               color="info"
-            >Fetch More Profile </v-btn>
-          </v-template>
-          <v-template v-if="moreData == true">
+            > {{sliceNumber >=50   ? 'Get Back' : 'Fetch More Profile'}} </v-btn>
+          <!-- </v-template> -->
+          <!-- <v-template v-if="moreData == true">
             <v-btn
               style="margin-left: 50%"
               @click="fetchMoreData"
               small
               color="info"
             >Get Back </v-btn>
-          </v-template>
+          </v-template> -->
         </v-col>
       </v-row>
     </div>
@@ -139,7 +113,8 @@ export default {
       darkmode: false,
       moreData: false,
       search: "",
-      searchAll: ""
+      searchAll: "",
+      sliceNumber: 10,
     };
   },
   watch: {
@@ -168,7 +143,7 @@ export default {
   computed: {
     filteredUsers() {
       console.log("filtered", this.users)
-      return this.users.slice(0, 10).filter(obj => Object.values(obj).some(val => val.includes(this.search)))
+      return this.users.slice(0, this.sliceNumber).filter(obj => Object.values(obj).some(val => val.includes(this.search)))
     },
     filteredUsersAll() {
       console.log("filtered", this.users)
@@ -184,7 +159,12 @@ export default {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     },
     fetchMoreData() {
-      this.moreData = !this.moreData;
+      console.log(this.sliceNumber);
+      if(this.sliceNumber >= this.users.length && !this.moreData){
+        this.sliceNumber = 0
+        this.moreData = false;
+      }
+      this.sliceNumber+=10
     },
   },
 };
@@ -194,6 +174,7 @@ export default {
 .container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .cards {
@@ -222,5 +203,12 @@ export default {
   display: flex;
   flex-wrap: wrap;
 }
-
+.author{
+  font-weight: bold; 
+  margin: 0px auto;
+  display: block;  
+}
+.row {
+    display: block !important;
+}
 </style>
