@@ -1,73 +1,134 @@
 <template>
-<div>
-  <v-footer>
-    <h1 style="font-weight: bold; margin-left: 45%"> Altug Erdem</h1>
-  </v-footer>
-  <v-container>
-    <v-row>
-      <v-col cols="6">
-        <h2>User List</h2>
-      </v-col>
-      <v-divider></v-divider>
-      <v-col cols="3">
-        <input class="input" type="text" v-model="search" placeholder="Search User Profiles">
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col class="container" cols="12">
-        <v-card class="cards" v-for="item in filteredUsers.slice(0,10)" :key="item.firstName">
-          <v-img height="70%" width="100%" :src="`${item.picture}`">
-          </v-img>
-          <v-card-text>
-            <div style="text-transform:capitalize;"> {{item.title}}.{{item.firstName}} {{item.lastName}} </div>
-            <div>
-              {{item.email}}
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        <v-template class="container" v-if="moreData">
-          <v-card class="cards" v-for="item in filteredUsers.slice(10,20)" :key="item.firstName">
-            <v-img height="70%" width="100%" :src="`${item.picture}`">
-            </v-img>
-            <v-card-text>
-              <div style="text-transform:capitalize;"> {{item.title}}.{{item.firstName}} {{item.lastName}} </div>
-              <div>
-                {{item.email}}
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-template>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-template v-if="moreData == false">
-          <v-btn @click="fetchMoreData" small color="info">Fetch More Profile </v-btn>
-        </v-template>
-        <v-template v-if="moreData == true">
-          <v-btn style="margin-left: 50%" @click="fetchMoreData" small color="info">Get Back </v-btn>
-        </v-template>
-      </v-col>
-      <v-col cols="1">
+  <div>
+    <v-footer>
+      <h1 style="font-weight: bold; margin-left: 45%"> Altug Erdem</h1>
+      <v-col style="position: absolute; right: 0;">
         <v-btn @click="darkMode">
           <v-icon class="mr-2">
             mdi-brightness-4
           </v-icon>
         </v-btn>
       </v-col>
-    </v-row>
+    </v-footer>
+    <div class="wrapper">
+      <v-row>
+        <v-col cols="6">
+          <h2>User List</h2>
+        </v-col>
+        <v-divider style="visibility: hidden;" />
+        <v-col cols="3">
+          <input
+            v-if="moreData == false &&  this.$vuetify.theme.dark == false"
+            class="input"
+            type="text"
+            v-model="search"
+            placeholder="Search User Profiles"
+          >
+          <input
+            v-if="moreData == false && this.$vuetify.theme.dark == true"
+            class="inputDark"
+            type="text"
+            v-model="search"
+            placeholder="Search User Profiles"
+          >
+          <input
+            v-if="moreData && this.$vuetify.theme.dark == false"
+            class="input"
+            type="text"
+            v-model="searchAll"
+            placeholder="Search User Profiles"
+          >
+          <input
+            v-if="moreData && $vuetify.theme.dark == true"
+            class="inputDark"
+            type="text"
+            v-model="searchAll"
+            placeholder="Search User Profiles"
+          >
+        </v-col>
+      </v-row>
 
-  </v-container>
-</div>
+      <v-row>
+        <v-template v-if="moreData == false">
+          <v-col
+            class="container"
+            cols="12"
+          >
+            <v-card
+              class="cards"
+              v-for="item in filteredUsers.slice(0,10)"
+              :key="item.id"
+            >
+              <v-img
+                height="70%"
+                width="100%"
+                :src="`${item.picture}`"
+              >
+              </v-img>
+              <v-card-text>
+                <div style="text-transform:capitalize;"> {{item.title}}.{{item.firstName}} {{item.lastName}} </div>
+                <div>
+                  {{item.email}}
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-template>
+      </v-row>
+
+      <v-row>
+        <v-template v-if="moreData">
+          <v-col
+            class="container"
+            cols="12"
+          >
+            <v-card
+              class="cards"
+              v-for="item in filteredUsersAll"
+              :key="item.id"
+            >
+              <v-img
+                height="70%"
+                width="100%"
+                :src="`${item.picture}`"
+              >
+              </v-img>
+              <v-card-text>
+                <div style="text-transform:capitalize;"> {{item.title}}.{{item.firstName}} {{item.lastName}} </div>
+                <div>
+                  {{item.email}}
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-template>
+      </v-row>
+      <v-row>
+        <v-col style="display:flex; justify-content: center;">
+          <v-template v-if="moreData == false">
+            <v-btn
+              class="c"
+              @click="fetchMoreData"
+              small
+              color="info"
+            >Fetch More Profile </v-btn>
+          </v-template>
+          <v-template v-if="moreData == true">
+            <v-btn
+              style="margin-left: 50%"
+              @click="fetchMoreData"
+              small
+              color="info"
+            >Get Back </v-btn>
+          </v-template>
+        </v-col>
+      </v-row>
+    </div>
+  </div>
 </template>
 
 <script>
+/* eslint-disable */
 import {
   mapActions
 } from "vuex";
@@ -78,6 +139,7 @@ export default {
       darkmode: false,
       moreData: false,
       search: "",
+      searchAll: ""
     };
   },
   watch: {
@@ -106,9 +168,11 @@ export default {
   computed: {
     filteredUsers() {
       console.log("filtered", this.users)
-      return this.users.filter((item) => {
-        return item.firstName.match(this.search);
-      })
+      return this.users.slice(0, 10).filter(obj => Object.values(obj).some(val => val.includes(this.search)))
+    },
+    filteredUsersAll() {
+      console.log("filtered", this.users)
+      return this.users.filter(obj => Object.values(obj).some(val => val.includes(this.searchAll)))
     }
   },
   methods: {
@@ -128,16 +192,13 @@ export default {
 
 <style>
 .container {
-  margin-left: 5% !important;
   display: flex;
-  margin: auto;
-  padding: auto;
   flex-wrap: wrap;
 }
 
 .cards {
-  height: 275px;
-  width: 225px;
+  height: 300px;
+  width: 230px;
   margin: 2%
 }
 
@@ -145,4 +206,21 @@ export default {
   border-style: solid;
   border-color: black;
 }
+
+.wrapper {
+  margin: 1%;
+  padding: 1%;
+}
+
+.fetchButton {
+  justify-content: center;
+}
+.inputDark{
+  background-color: white;
+}
+.container::after {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 </style>
