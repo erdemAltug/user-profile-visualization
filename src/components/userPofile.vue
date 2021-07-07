@@ -18,38 +18,23 @@
         <v-divider style="visibility: hidden;" />
         <v-col cols="3">
           <input
-            v-if="moreData == false &&  this.$vuetify.theme.dark == false"
+            v-if="this.$vuetify.theme.dark == false"
             class="input"
             type="text"
             v-model="search"
             placeholder="Search User Profiles"
           >
           <input
-            v-if="moreData == false && this.$vuetify.theme.dark == true"
+            v-if="this.$vuetify.theme.dark == true"
             class="inputDark"
             type="text"
             v-model="search"
-            placeholder="Search User Profiles"
-          >
-          <input
-            v-if="moreData && this.$vuetify.theme.dark == false"
-            class="input"
-            type="text"
-            v-model="searchAll"
-            placeholder="Search User Profiles"
-          >
-          <input
-            v-if="moreData && $vuetify.theme.dark == true"
-            class="inputDark"
-            type="text"
-            v-model="searchAll"
             placeholder="Search User Profiles"
           >
         </v-col>
       </v-row>
-
       <v-row>
-        <v-template v-if="moreData == false">
+        <v-template >
           <v-col
             class="container"
             cols="12"
@@ -60,8 +45,6 @@
               :key="item.id"
             >
               <v-img
-                height="70%"
-                width="100%"
                 :src="`${item.picture}`"
               >
               </v-img>
@@ -113,14 +96,8 @@ export default {
       darkmode: false,
       moreData: false,
       search: "",
-      searchAll: "",
       sliceNumber: 10,
     };
-  },
-  watch: {
-    darkmode() {
-      this.handledarkmode()
-    }
   },
   created() {
     this.getRecruitmentData()
@@ -131,24 +108,12 @@ export default {
       .catch((err) => {
         console.log(err)
       });
-    if (process.browser) {
-      if (localStorage.getItem('DarkMode')) {
-        const cookieValue = localStorage.getItem('DarkMode') === 'true'
-        this.darkmode = cookieValue
-      } else {
-        this.handledarkmode()
-      }
-    }
   },
   computed: {
     filteredUsers() {
       console.log("filtered", this.users)
       return this.users.slice(0, this.sliceNumber).filter(obj => Object.values(obj).some(val => val.includes(this.search)))
     },
-    filteredUsersAll() {
-      console.log("filtered", this.users)
-      return this.users.filter(obj => Object.values(obj).some(val => val.includes(this.searchAll)))
-    }
   },
   methods: {
     ...mapActions(["getRecruitmentData"]),
@@ -160,9 +125,8 @@ export default {
     },
     fetchMoreData() {
       console.log(this.sliceNumber);
-      if(this.sliceNumber >= this.users.length && !this.moreData){
+      if(this.sliceNumber >= this.users.length){
         this.sliceNumber = 0
-        this.moreData = false;
       }
       this.sliceNumber+=10
     },
@@ -178,7 +142,7 @@ export default {
 }
 
 .cards {
-  height: 300px;
+  height: 325px;
   width: 230px;
   margin: 2%
 }
